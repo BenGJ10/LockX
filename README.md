@@ -1,9 +1,9 @@
-# Automated Deadlock Detection Tool
+# LockX - Automated Deadlock Detection Tool
 
 ## 📌 Project Overview
 
 ### 🎯 Goal
-The **Automated Deadlock Detection Tool** is designed to monitor system processes and detect potential deadlocks by analyzing resource allocation and process dependencies. By leveraging graph-based techniques, the tool aims to enhance system reliability by identifying and mitigating deadlocks in real time.
+**LockX** an Automated Deadlock Detection Tool is designed to monitor system processes and detect potential deadlocks by analyzing resource allocation and process dependencies. By leveraging graph-based techniques, the tool aims to enhance system reliability by identifying and mitigating deadlocks in real time.
 
 ### ✅ Expected Outcomes
 - **Detect Circular Wait Conditions**: Identify cycles in the **Resource Allocation Graph (RAG)** indicating potential deadlocks.  
