@@ -1,43 +1,60 @@
-# LockX - Automated Deadlock Detection Tool
+# **LockX - Automated Deadlock Detection Tool**  
 
-## 📌 Project Overview
+## 📌 **Project Overview**  
 
-### 🎯 Goal
-**LockX** an Automated Deadlock Detection Tool is designed to monitor system processes and detect potential deadlocks by analyzing resource allocation and process dependencies. By leveraging graph-based techniques, the tool aims to enhance system reliability by identifying and mitigating deadlocks in real time.
+### 🎯 **Goal**  
+**LockX** is an **Automated Deadlock Detection Tool** designed to monitor system processes and detect potential deadlocks by analyzing **resource allocation and process dependencies**. Using **graph-based techniques**, it identifies deadlocks in real time and provides insights to resolve them efficiently.  
 
-### ✅ Expected Outcomes
-- **Detect Circular Wait Conditions**: Identify cycles in the **Resource Allocation Graph (RAG)** indicating potential deadlocks.  
-- **Visual Representation**: Provide a clear visualization of process dependencies and resource allocations.  
-- **Resolution Strategies**: Suggest possible solutions such as:
-  - **Resource Preemption** (forcibly reclaiming resources)
-  - **Process Termination** (selectively terminating processes to resolve deadlock)  
+### ✅ **Current Features**  
+- **Live Deadlock Detection**: Continuously monitors system processes and **automatically detects deadlocks**.  
+- **Graph-Based Cycle Detection**: Uses **Wait-For Graph (WFG) construction** and **Depth-First Search (DFS)** to detect cycles indicating deadlocks.  
+- **Automated Logging**: Logs detected deadlocks with timestamps for **future analysis and debugging**.  
+
+### 🚀 **Planned Enhancements**  
+- **Live System Monitoring**: Enhancing process detection with real-time updates.  
+- **Graphical User Interface (GUI)**: A professional, interactive visualization for deadlock representation.  
+- **Advanced Optimization**: Improving detection efficiency for large-scale systems.  
 
 ---
 
-## 🔍 Understanding Deadlocks  
+## 🔍 **Understanding Deadlocks**  
 
-A **deadlock** occurs when a set of processes is blocked because each process holds a resource and waits for another resource held by another process. The following four conditions must hold simultaneously for a deadlock to occur:  
+A **deadlock** occurs when a group of processes are **permanently blocked** because each one is waiting for a resource held by another.  
 
-### 📌 Four Necessary Conditions for Deadlock  
+### 📌 **Four Necessary Conditions for Deadlock**  
 1. **Mutual Exclusion**: Only one process can use a resource at a time.  
-2. **Hold and Wait**: A process holding at least one resource is waiting for additional resources held by other processes.  
-3. **No Preemption**: A resource cannot be forcibly taken from a process; it must be released voluntarily.  
-4. **Circular Wait**: A set of processes form a circular chain where each process is waiting for a resource held by the next process in the chain.  
+2. **Hold and Wait**: A process holding resources is waiting for additional resources held by others.  
+3. **No Preemption**: Resources cannot be forcibly taken from a process.  
+4. **Circular Wait**: A circular chain of processes exists, where each process waits for a resource held by the next.  
 
-If **circular wait** exists, a **deadlock** has occurred.  
+A **cycle in the Wait-For Graph (WFG)** confirms a **deadlock condition**.  
 
 ---
 
-## 🛠 Deadlock Detection (Our Focus)
+## ⚙️ **How LockX Detects Deadlocks**  
 
-### 🔄 Approach
-- The tool **periodically scans** the system for deadlocks by checking for cycles in the **Resource Allocation Graph (RAG)**.  
-- If a **cycle is detected**, a **deadlock exists**, and the system must take corrective action.  
+### 🔄 **Detection Workflow**  
+1. **System Process Monitoring**: Reads process-resource data from a JSON file.  
+2. **Wait-For Graph Construction**: Builds a **directed graph** where nodes are processes and edges indicate dependencies.  
+3. **Cycle Detection (DFS Algorithm)**:  
+   - If a cycle is found → **Deadlock detected!** 🔴  
+   - If no cycle exists → **System is safe.** ✅  
+4. **Deadlock Logging**: The tool logs deadlocks in `deadlock_log.json` for analysis.  
 
-### 🚀 Features (Planned Enhancements)
-- **Live Monitoring** of system processes and resources.  
-- **Graphical User Interface (GUI)** for better visualization and interaction.  
-- **Advanced Optimization Techniques** for efficient deadlock detection.  
+---
+
+## 🏗 **Current Implementation**  
+
+### ✅ **Step 1: System Monitoring** *(Completed ✅)*  
+- Reads live **process-resource mappings** from `system_state.json`.  
+
+### ✅ **Step 2: Deadlock Detection** *(In Progress 🚧)*  
+- Implements **DFS-based cycle detection** in the **Wait-For Graph (WFG)**.  
+- Deadlock information is stored in **`deadlock_log.json`**.  
+- Periodically scans for deadlocks in a **background thread**.  
+
+### 🔜 **Step 3: GUI Visualization** *(Upcoming 🎨)*  
+- A **user-friendly dashboard** will be created for **real-time deadlock monitoring**.  
 
 ---
 
