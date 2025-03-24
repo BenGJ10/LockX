@@ -63,7 +63,9 @@ A **cycle in the Wait-For Graph (WFG)** confirms a **deadlock condition**.
 ---
 
 ## 📌 Contributors
-- **Ben Gregory John** (12315900)  
+- **Ben Gregory John** (12315900)
+- **Pooja Dheeraj Sindhu** (12322318)
+- **Aleena Rose Parokkaran** (12306508)
 
 ## 📜 License
 This project is licensed under the **MIT License**.
