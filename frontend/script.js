@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LockX - Advanced Deadlock Monitoring</title>
     <link rel="stylesheet" href="style.css">
-    <script defer src="script.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
 
@@ -28,15 +26,13 @@
         <div class="hero-content">
             <h1>Welcome to LockX</h1>
             <p>Advanced Deadlock Detection & Monitoring Tool to Optimize System Performance.</p>
-            <a href="https://github.com/BenGJ10/LockX-Automated-Deadlock-Detection-Tool" target="_blank" class="get-started-btn">Get Started</a>
+            <a href="lockx.html" class="get-started-btn">Learn More</a>
         </div>
         <div class="hero-image">
             <img src="lockx1.jpeg" alt="LockX Overview">
         </div>
     </section>
 
-    <!-- DEADLOCK SIMULATION SECTION -->
- 
     <!-- FOOTER -->
     <footer>
         <p>© 2025 LockX. All rights reserved.</p>
