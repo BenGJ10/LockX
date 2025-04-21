@@ -2,7 +2,7 @@
 
 ## 📌 Project Overview  
 
-**LockX** is a **real-time Automated Deadlock Detection System** designed for monitoring and analyzing system processes. It detects potential **deadlocks in background processes** by applying **graph-based algorithms** to identify cycles in **resource allocation graphs (RAGs)**.  
+**LockX** is a **real-time Automated Deadlock Detection System** designed for monitoring and analyzing system processes. It detects potential **deadlocks in background processes** by applying **graph-based algorithms** to identify cycles in **wait-for graphs (WFGs)**.  
 
 This tool is especially useful for **operating system research**, **process synchronization analysis**, and **debugging system performance issues** caused by deadlocks.  
 
