@@ -1,4 +1,3 @@
-// wfg-visualization.js
 document.addEventListener('DOMContentLoaded', function() {
     // Tutorial content
     const tutorialSteps = [
@@ -9,60 +8,49 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         {
             title: "Graph Elements",
-            content: "The graph contains two types of nodes: <strong>Processes</strong> (blue circles) and <strong>Resources</strong> (green squares).",
+            content: "The graph contains <strong>Process nodes</strong> (blue circles) representing system processes.",
             highlight: ".node"
         },
         {
-            title: "Relationships",
-            content: "Edges show relationships between elements. <strong>Solid arrows</strong> indicate a process holds a resource. <strong>Dashed arrows</strong> show a process is waiting for a resource.",
+            title: "Dependencies",
+            content: "<strong>Directed edges</strong> show wait-for relationships. P1 → P2 means Process 1 is waiting for Process 2.",
             highlight: ".link"
         },
         {
             title: "Deadlock Detection",
-            content: "A deadlock occurs when there's a <strong>cycle</strong> in the graph where processes are waiting for each other in a circular chain.",
-            highlight: null
+            content: "A deadlock occurs when there's a <strong>cycle</strong> in the graph (P1→P2→P3→P1). Our system highlights these in red.",
+            highlight: ".deadlock-node"
         },
         {
             title: "Try It Yourself",
-            content: "Use the 'Simulate Deadlock' button to create a deadlock situation, or 'Reset Graph' to start over.",
+            content: "Use the buttons to explore different scenarios: normal operation, deadlock, or a random graph.",
             highlight: ".graph-controls"
         }
     ];
 
-    // Initial graph data
-    const initialGraph = {
+    // Graph data examples
+    const normalGraph = {
         nodes: [
-            { id: "P1", name: "Process 1", type: "process" },
-            { id: "P2", name: "Process 2", type: "process" },
-            { id: "P3", name: "Process 3", type: "process" },
-            { id: "R1", name: "Printer", type: "resource" },
-            { id: "R2", name: "Scanner", type: "resource" }
+            { id: "P1", name: "Process 1" },
+            { id: "P2", name: "Process 2" },
+            { id: "P3", name: "Process 3" }
         ],
         links: [
-            { source: "P1", target: "R1", type: "holds" },
-            { source: "P2", target: "R2", type: "holds" },
-            { source: "P3", target: "R1", type: "waits" },
-            { source: "P1", target: "R2", type: "waits" }
+            { source: "P1", target: "P2" },
+            { source: "P2", target: "P3" }
         ]
     };
 
-    // Deadlock graph data
     const deadlockGraph = {
         nodes: [
-            { id: "P1", name: "Process 1", type: "process" },
-            { id: "P2", name: "Process 2", type: "process" },
-            { id: "P3", name: "Process 3", type: "process" },
-            { id: "R1", name: "File A", type: "resource" },
-            { id: "R2", name: "File B", type: "resource" },
-            { id: "R3", name: "File C", type: "resource" }
+            { id: "P1", name: "Process 1" },
+            { id: "P2", name: "Process 2" },
+            { id: "P3", name: "Process 3" }
         ],
         links: [
-            { source: "P1", target: "R1", type: "holds" },
-            { source: "P2", target: "R2", type: "holds" },
-            { source: "P3", target: "R3", type: "holds" },
-            { source: "P1", target: "R2", type: "waits" },
-            { source: "P2", target: "R3", type: "waits" },
-            { source: "P3", target: "R1", type: "waits" }
+            { source: "P1", target: "P2" },
+            { source: "P2", target: "P3" },
+            { source: "P3", target: "P1" }
         ]
     };
 
@@ -75,29 +63,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Simulation setup
     const simulation = d3.forceSimulation()
-        .force("link", d3.forceLink().id(d => d.id).distance(100))
+        .force("link", d3.forceLink().id(d => d.id).distance(150))
         .force("charge", d3.forceManyBody().strength(-500))
         .force("center", d3.forceCenter(width / 2, height / 2))
-        .force("collision", d3.forceCollide().radius(40));
+        .force("collision", d3.forceCollide().radius(50));
 
     // Graph update function
     function updateGraph(data) {
         // Clear existing graph
         svg.selectAll("*").remove();
 
-        // Process counts
-        const processCount = data.nodes.filter(n => n.type === "process").length;
-        const resourceCount = data.nodes.filter(n => n.type === "resource").length;
+        // Update process and edge counts
         document.getElementById("processCount").textContent = 
-            `Processes: ${processCount} | Resources: ${resourceCount}`;
+            `Processes: ${data.nodes.length} | Edges: ${data.links.length}`;
+
+        // Create arrow markers
+        svg.append("defs").append("marker")
+            .attr("id", "arrowhead")
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", 25)
+            .attr("refY", 0)
+            .attr("orient", "auto")
+            .attr("markerWidth", 6)
+            .attr("markerHeight", 6)
+            .attr("xoverflow", "visible")
+            .append("svg:path")
+            .attr("d", "M 0,-5 L 10,0 L 0,5")
+            .attr("fill", "#666");
 
         // Create links
         const link = svg.append("g")
             .selectAll("line")
             .data(data.links)
             .enter().append("line")
-            .attr("class", d => `link link-${d.type}`)
-            .attr("stroke-dasharray", d => d.type === "waits" ? "5,5" : "0");
+            .attr("class", "link")
+            .attr("marker-end", "url(#arrowhead)");
 
         // Create nodes
         const node = svg.append("g")
@@ -109,26 +109,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 .on("drag", dragged)
                 .on("end", dragended));
 
-        // Add shapes based on node type
-        node.append(d => {
-            if (d.type === "process") {
-                return document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            } else {
-                const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-                rect.setAttribute("width", "40");
-                rect.setAttribute("height", "40");
-                rect.setAttribute("x", "-20");
-                rect.setAttribute("y", "-20");
-                return rect;
-            }
-        })
-        .attr("class", d => `node node-${d.type}`);
+        // Add circles for nodes
+        node.append("circle")
+            .attr("r", 20)
+            .attr("class", "node");
 
         // Add labels
         node.append("text")
             .attr("dy", 4)
             .text(d => d.name)
             .attr("class", "node-label");
+
+        // Add labels with better positioning
+        node.append("text")
+            .attr("dy", ".35em") // Better vertical alignment
+            .attr("class", "node-label")
+            .text(d => {
+                // Abbreviate long process names
+                if (d.name.length > 8) {
+                    return d.name.split(' ')[0] + ' ' + d.name.split(' ')[1].charAt(0);
+                }
+                return d.name;
+            })
+            .style("font-size", "10px");
 
         // Update simulation
         simulation.nodes(data.nodes);
@@ -146,64 +149,93 @@ document.addEventListener('DOMContentLoaded', function() {
             node.attr("transform", d => `translate(${d.x},${d.y})`);
         });
 
-        // Check for deadlock (simple cycle detection)
-        const hasCycle = checkForCycle(data);
+        // Check for deadlock (cycle detection)
+        const cycle = findCycle(data);
         const statusElement = document.getElementById("graphStatus");
-        if (hasCycle) {
+        
+        if (cycle && cycle.length > 0) {
             statusElement.textContent = "Status: DEADLOCK DETECTED!";
             statusElement.className = "deadlock";
             
-            // Highlight cycle
-            svg.selectAll(".link")
-                .classed("deadlock-edge", d => hasCycle.includes(d.source.id) && hasCycle.includes(d.target.id));
+            // Highlight cycle nodes and edges
+            node.select("circle")
+                .classed("deadlock-node", d => cycle.includes(d.id));
                 
-            svg.selectAll(".node")
-                .classed("deadlock-node", d => hasCycle.includes(d.id));
+            link.classed("deadlock-edge", d => 
+                cycle.includes(d.source.id) && cycle.includes(d.target.id));
         } else {
             statusElement.textContent = "Status: No deadlock detected";
             statusElement.className = "";
         }
     }
 
-    // Simple cycle detection (for demonstration)
-    function checkForCycle(graph) {
+    // Cycle detection using DFS
+    function findCycle(graph) {
         const visited = new Set();
         const recursionStack = new Set();
-        const nodeMap = new Map(graph.nodes.map(n => [n.id, n]));
         const adjList = new Map();
+        const cycle = [];
         
         // Build adjacency list
         graph.nodes.forEach(n => adjList.set(n.id, []));
-        graph.links.forEach(l => {
-            if (l.type === "waits") {
-                adjList.get(l.source.id).push(l.target.id);
-            }
-        });
+        graph.links.forEach(l => adjList.get(l.source.id).push(l.target.id));
         
-        // DFS cycle detection
-        function hasCycleUtil(nodeId) {
-            if (!visited.has(nodeId)) {
-                visited.add(nodeId);
-                recursionStack.add(nodeId);
-                
-                for (const neighbor of adjList.get(nodeId)) {
-                    if (!visited.has(neighbor) && hasCycleUtil(neighbor)) {
-                        return true;
-                    } else if (recursionStack.has(neighbor)) {
-                        return true;
-                    }
+        function dfs(nodeId, path) {
+            if (recursionStack.has(nodeId)) {
+                // Found a cycle
+                const cycleStart = path.indexOf(nodeId);
+                return path.slice(cycleStart);
+            }
+            
+            if (visited.has(nodeId)) return null;
+            
+            visited.add(nodeId);
+            recursionStack.add(nodeId);
+            path.push(nodeId);
+            
+            for (const neighbor of adjList.get(nodeId)) {
+                const result = dfs(neighbor, [...path]);
+                if (result) return result;
+            }
+            
+            recursionStack.delete(nodeId);
+            return null;
+        }
+        
+        for (const node of graph.nodes) {
+            const result = dfs(node.id, []);
+            if (result) return result;
+        }
+        
+        return [];
+    }
+
+    // Generate random WFG
+    function generateRandomGraph() {
+        const nodeCount = Math.floor(Math.random() * 5) + 3; // 3-7 processes
+        const nodes = Array.from({length: nodeCount}, (_, i) => ({
+            id: `P${i+1}`,
+            name: `Process ${i+1}`
+        }));
+        
+        const links = [];
+        const possibleEdges = [];
+        
+        // Generate all possible edges
+        for (let i = 0; i < nodeCount; i++) {
+            for (let j = 0; j < nodeCount; j++) {
+                if (i !== j) {
+                    possibleEdges.push({source: `P${i+1}`, target: `P${j+1}`});
                 }
             }
-            recursionStack.delete(nodeId);
-            return false;
         }
         
-        for (const nodeId of adjList.keys()) {
-            if (hasCycleUtil(nodeId)) {
-                return Array.from(recursionStack);
-            }
-        }
-        return null;
+        // Randomly select some edges (20-50% of possible)
+        const edgeCount = Math.floor(possibleEdges.length * (0.2 + Math.random() * 0.3));
+        const shuffled = possibleEdges.sort(() => 0.5 - Math.random());
+        links.push(...shuffled.slice(0, edgeCount));
+        
+        return { nodes, links };
     }
 
     // Drag functions
@@ -225,12 +257,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Button event listeners
-    document.getElementById("refreshBtn").addEventListener("click", () => {
-        updateGraph(initialGraph);
+    document.getElementById("normalBtn").addEventListener("click", () => {
+        updateGraph(normalGraph);
     });
 
-    document.getElementById("simulateBtn").addEventListener("click", () => {
+    document.getElementById("deadlockBtn").addEventListener("click", () => {
         updateGraph(deadlockGraph);
+    });
+
+    document.getElementById("randomBtn").addEventListener("click", () => {
+        updateGraph(generateRandomGraph());
     });
 
     // Tutorial modal functionality
@@ -247,15 +283,6 @@ document.addEventListener('DOMContentLoaded', function() {
             <h3>${stepData.title}</h3>
             <p>${stepData.content}</p>
         `;
-        
-        // Highlight elements if specified
-        if (stepData.highlight) {
-            const elements = document.querySelectorAll(stepData.highlight);
-            elements.forEach(el => el.classList.add("highlight"));
-            setTimeout(() => {
-                elements.forEach(el => el.classList.remove("highlight"));
-            }, 2000);
-        }
         
         // Update button states
         document.getElementById("prevBtn").disabled = step === 0;
@@ -284,6 +311,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Initialize with default graph
-    updateGraph(initialGraph);
+    // Initialize with normal graph
+    updateGraph(normalGraph);
 });
