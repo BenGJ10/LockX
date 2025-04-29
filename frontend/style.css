@@ -976,4 +976,38 @@ tr:nth-child(even) {
 }
 
 
+/* Process node styling */
+.node {
+    fill: #4285F4; /* Google blue color */
+    stroke: #fff;  /* White border */
+    stroke-width: 2px;
+    r: 20;         /* Radius */
+}
+
+/* Deadlock node styling */
+.deadlock-node {
+    fill: #EA4335; /* Google red */
+    stroke: #fff;
+    stroke-width: 3px;
+    animation: pulse 1.5s infinite;
+}
+
+/* Node label styling */
+.node-label {
+    font-size: 12px;
+    text-anchor: middle;
+    fill: white;   /* White text */
+    font-weight: bold;
+    pointer-events: none;
+}
+.node-label {
+    font-size: 10px; /* Reduced from 12px for better fit */
+    text-anchor: middle;
+    dominant-baseline: middle; /* Perfect vertical centering */
+    fill: white;
+    font-weight: bold;
+    pointer-events: none;
+    text-shadow: 0 0 2px rgba(0,0,0,0.5); /* Improves readability */
+}
+
 
