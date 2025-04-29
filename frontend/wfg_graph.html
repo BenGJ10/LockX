@@ -9,7 +9,6 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-    <!-- HEADER -->
     <header>
         <div class="logo">LockX</div>
         <nav>
@@ -17,7 +16,7 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="lockx.html">About LockX</a></li>
                 <li><a href="deadlock.html">About Deadlock</a></li>
-                <li><a href="wfg.html" class="active">WFG Visualization</a></li>
+                <li><a href="wfg_graph.html" class="active">About WFG</a></li>
                 <li><a href="team.html">Meet the Team</a></li>
             </ul>
         </nav>
@@ -28,50 +27,34 @@
         
         <div class="info-card">
             <h2>What is a Wait-For Graph?</h2>
-            <p>A Wait-For Graph (WFG) is a directed graph used to detect deadlocks in operating systems. It shows the dependencies between processes and resources:</p>
+            <p>A Wait-For Graph (WFG) is a directed graph used to detect deadlocks in operating systems:</p>
             <ul class="feature-list">
-                <li><i class="fas fa-circle"></i> <strong>Nodes:</strong> Represent processes (circles) and resources (squares)</li>
-                <li><i class="fas fa-arrow-right"></i> <strong>Edges:</strong> Show relationships (holds/waiting between processes and resources)</li>
-                <li><i class="fas fa-redo"></i> <strong>Cycles:</strong> A cycle in the graph indicates a deadlock situation</li>
+                <li><i class="fas fa-circle"></i> <strong>Nodes:</strong> Represent processes only</li>
+                <li><i class="fas fa-arrow-right"></i> <strong>Edges:</strong> Directed edges show dependencies (P1 → P2 means P1 is waiting for P2)</li>
+                <li><i class="fas fa-redo"></i> <strong>Cycles:</strong> Any cycle in the graph indicates a deadlock situation</li>
             </ul>
         </div>
         
-        <div class="info-card">
-            <h2>How Deadlock Detection Works</h2>
-            <p>The system detects deadlocks by searching for cycles in the WFG:</p>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <p>Build the graph showing all process-resource dependencies</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <p>Perform cycle detection using algorithms like Depth-First Search</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <p>If a cycle is found, processes in the cycle are deadlocked</p>
-                </div>
-            </div>
-        </div>
-
         <div class="visualization-container">
             <h2>Interactive WFG Demonstration</h2>
             <div class="graph-controls">
-                <button id="refreshBtn" class="btn">
-                    <i class="fas fa-sync-alt"></i> Reset Graph
+                <button id="normalBtn" class="btn">
+                    <i class="fas fa-check-circle"></i> Normal State
                 </button>
-                <button id="simulateBtn" class="btn">
-                    <i class="fas fa-bolt"></i> Simulate Deadlock
+                <button id="deadlockBtn" class="btn">
+                    <i class="fas fa-exclamation-triangle"></i> Deadlock State
+                </button>
+                <button id="randomBtn" class="btn">
+                    <i class="fas fa-random"></i> Random Graph
                 </button>
                 <button id="tutorialBtn" class="btn">
-                    <i class="fas fa-question-circle"></i> Show Tutorial
+                    <i class="fas fa-question-circle"></i> Tutorial
                 </button>
             </div>
             
             <div class="status-display">
                 <span id="graphStatus">Status: No deadlock detected</span>
-                <span id="processCount">Processes: 0 | Resources: 0</span>
+                <span id="processCount">Processes: 0 | Edges: 0</span>
             </div>
             
             <div id="wfgGraph"></div>
@@ -82,24 +65,33 @@
                     <span>Process</span>
                 </div>
                 <div class="legend-item">
-                    <div class="resource-legend"></div>
-                    <span>Resource</span>
-                </div>
-                <div class="legend-item">
-                    <div class="holds-legend"></div>
-                    <span>Holds</span>
-                </div>
-                <div class="legend-item">
-                    <div class="waits-legend"></div>
+                    <div class="edge-legend"></div>
                     <span>Waits For</span>
                 </div>
                 <div class="legend-item">
                     <div class="deadlock-legend"></div>
-                    <span>Deadlock</span>
+                    <span>Deadlocked Process</span>
                 </div>
             </div>
         </div>
         
+        <div class="info-card">
+            <h2>How Deadlock Detection Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <p>The system monitors process dependencies and builds the WFG</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <p>Regularly checks for cycles in the graph using algorithms like Depth-First Search</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <p>If a cycle is found, the system can take corrective action (kill process, rollback, etc.)</p>
+                </div>
+            </div>
+        </div>
         <div class="info-card">
             <h2>Real-world Deadlock Examples</h2>
             <div class="examples-grid">
@@ -129,10 +121,22 @@
                 <button id="nextBtn" class="btn">Next</button>
             </div>
         </div>
+    </section>
+
+    <div id="tutorialModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>WFG Tutorial</h2>
+            <div id="tutorialContent"></div>
+            <div class="tutorial-nav">
+                <button id="prevBtn" class="btn">Previous</button>
+                <button id="nextBtn" class="btn">Next</button>
+            </div>
+        </div>
     </div>
 
     <footer>
-        <p>© 2025 LockX. All rights reserved.</p>
+        <p>&copy; 2025 LockX Deadlock Detection System. All rights reserved.</p>
     </footer>
 
     <script src="wfg_graph.js"></script>
