@@ -1,81 +1,117 @@
+# deadlock_detector.py
 import psutil
 import time
-import random 
-import sys
-import os
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-def get_running_processes():
-    """Fetch all running processes with PID, name, CPU, and memory usage."""
-    processes = []
-    for proc in psutil.process_iter(attrs=['pid', 'name', 'cpu_percent', 'memory_info']):
-        try:
-            memory_info = proc.info['memory_info']
-            processes.append({
-                "pid": proc.info['pid'],
-                "name": proc.info['name'],
-                "cpu_usage": proc.info['cpu_percent'],
-                "memory_usage": memory_info.rss if memory_info else 0  # Memory in bytes, default to 0 if None
-            })
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-            pass
-    return processes
+import json
+import random
+from collections import defaultdict
 
 class DeadlockDetector:
     def __init__(self):
-        self.wait_graph = {}
-    
-    def build_wait_graph(self, processes):
-        """Randomly introduce a deadlock by creating a cyclic dependency."""
-        if len(processes) < 3:
-            self.wait_graph = {}  # Not enough processes for deadlock
-            return
+        self.log_file = 'deadlock_logs.txt'
+        self.wfg = {}  # Wait-For Graph
+        self.process_map = {}  # Maps PID to process info
         
-        deadlock_processes = random.sample([p['pid'] for p in processes], 3)
-        self.wait_graph = {
-            deadlock_processes[0]: deadlock_processes[1],
-            deadlock_processes[1]: deadlock_processes[2],
-            deadlock_processes[2]: deadlock_processes[0],
-        }
+    def get_system_processes(self):
+        processes = []
+        self.process_map = {}
+        for proc in psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_info']):
+            try:
+                process_info = {
+                    'pid': proc.pid,
+                    'name': proc.name(),
+                    'cpu': round(proc.cpu_percent(), 1),
+                    'memory': round(proc.memory_info().rss / (1024 * 1024), 1)  # MB
+                }
+                processes.append(process_info)
+                self.process_map[proc.pid] = process_info
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+        return processes
+    
+    def inject_deadlock(self):
+        """Simulate a deadlock by creating a random cycle in the WFG"""
+        processes = self.get_system_processes()
+        if len(processes) < 3:
+            return False  # Not enough processes to create a deadlock
+        
+        # Select random processes (between 3-6 processes for the cycle)
+        cycle_size = random.randint(3, min(6, len(processes)))
+        selected_processes = random.sample(processes, cycle_size)
+        
+        # Create a cycle in the WFG
+        self.wfg = {}
+        for i in range(cycle_size):
+            current_pid = selected_processes[i]['pid']
+            next_pid = selected_processes[(i + 1) % cycle_size]['pid']
+            self.wfg[current_pid] = next_pid
+        
+        return True
     
     def detect_deadlock(self):
-        """Detect cycles in the wait graph."""
+        """Detect deadlock using DFS cycle detection and return the cycle"""
         visited = set()
-        deadlocked_processes = set()
+        recursion_stack = set()
+        cycle = []
         
-        def dfs(pid, path):
-            if pid in path:
-                deadlocked_processes.update(path)
-                return
-            if pid in visited:
-                return
-            
-            path.add(pid)
-            if pid in self.wait_graph:
-                dfs(self.wait_graph[pid], path)
-            path.remove(pid)
+        def dfs(pid):
+            nonlocal cycle
+            if pid not in self.wfg:
+                return False
+                
             visited.add(pid)
+            recursion_stack.add(pid)
+            
+            next_pid = self.wfg[pid]
+            if next_pid in recursion_stack:
+                # Cycle detected
+                cycle.append(pid)
+                return True
+            if next_pid not in visited:
+                if dfs(next_pid):
+                    cycle.append(pid)
+                    return True
+                    
+            recursion_stack.remove(pid)
+            return False
         
-        for process in self.wait_graph.keys():
-            if process not in visited:
-                dfs(process, set())
+        for pid in self.wfg:
+            if pid not in visited:
+                if dfs(pid):
+                    # Return the cycle we found (in order)
+                    cycle.reverse()
+                    # Complete the cycle by adding the first node again
+                    cycle.append(cycle[0])
+                    return cycle
+        return []
+    
+    def get_wfg_edges(self):
+        """Return WFG edges for visualization"""
+        edges = []
+        for src, dest in self.wfg.items():
+            edges.append({
+                'source': src,
+                'source_name': self.process_map.get(src, {}).get('name', str(src)),
+                'target': dest,
+                'target_name': self.process_map.get(dest, {}).get('name', str(dest))
+            })
+        return edges
+    
+    def log_deadlock(self, cycle):
+        if not cycle:
+            return
+            
+        log_entry = {
+            'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
+            'cycle': cycle[:-1],  # Remove duplicate node
+            'edges': self.get_wfg_edges()
+        }
         
-        return list(deadlocked_processes)
-
-def detect_deadlock(simulate_delay=True):
-    """Runs deadlock detection, injecting deadlocks after 5-10 seconds."""
-    detector = DeadlockDetector()
-    processes = get_running_processes()
+        with open(self.log_file, 'a') as f:
+            f.write(json.dumps(log_entry) + '\n')
     
-    if simulate_delay:
-        time.sleep(random.randint(5, 10))
-    
-    detector.build_wait_graph(processes)
-    deadlocks = detector.detect_deadlock()
-    
-    if deadlocks:
-        with open("logs/logs.txt", "a") as log_file:
-            log_file.write(f"Deadlock detected in processes: {deadlocks}\n")
-    
-    return deadlocks
+    def get_deadlock_logs(self):
+        try:
+            with open(self.log_file, 'r') as f:
+                return [json.loads(line) for line in f.readlines()]
+        except FileNotFoundError:
+            return []
