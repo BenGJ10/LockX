@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Deadlock</title>
+    <title>About Deadlock - LockX</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
-
     <!-- HEADER -->
     <header>
         <div class="logo">LockX</div>
@@ -15,69 +15,85 @@
             <ul>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="lockx.html">About LockX</a></li>
-                <li><a href="deadlock.html">About Deadlock</a></li>
+                <li><a href="deadlock.html" class="active">About Deadlock</a></li>
+                <li><a href="wfg_graph.html">About WFG</a></li>
                 <li><a href="team.html">Meet the Team</a></li>
             </ul>
         </nav>
     </header>
 
     <section class="content">
-        <h1>What is Deadlock?</h1>
-        <p>A deadlock is a situation where a set of processes become permanently blocked because each process is waiting for a resource that another process is holding. This prevents further execution of the processes, leading to a system halt if not resolved.</p>
+        <h1>Understanding Deadlocks</h1>
         
-        <h2>📌 Four Necessary Conditions for Deadlock</h2>
-        <p>For a deadlock to occur, the following four conditions must hold simultaneously:</p>
-        <ul>
-            <li><strong>Mutual Exclusion:</strong> Only one process can use a resource at a time. If another process requests the resource, it must wait until the resource is released.</li>
-            <li><strong>Hold and Wait:</strong> A process holding at least one resource is waiting to acquire additional resources held by other processes.</li>
-            <li><strong>No Preemption:</strong> A resource cannot be forcibly removed from a process; it must be released voluntarily.</li>
-            <li><strong>Circular Wait:</strong> A set of processes form a circular chain where each process is waiting for a resource that the next process in the chain holds.</li>
-        </ul>
-        <p>If a cycle is detected in the <strong>Wait-For Graph (WFG)</strong>, a deadlock is confirmed.</p>
+        <div class="info-card">
+            <h2>💡 What is a Deadlock?</h2>
+            <p>A deadlock is a situation in computing where two or more processes are unable to proceed because each is waiting for the other to release a resource, creating a cyclic dependency that halts system progress.</p>
+        </div>
+        
+        <div class="info-card">
+            <h2>📌 The Four Necessary Conditions</h2>
+            <div class="conditions-grid">
+                <div class="condition">
+                    <i class="fas fa-lock"></i>
+                    <h3>Mutual Exclusion</h3>
+                    <p>Resources cannot be shared; only one process can use a resource at a time.</p>
+                </div>
+                <div class="condition">
+                    <i class="fas fa-hand-holding"></i>
+                    <h3>Hold and Wait</h3>
+                    <p>Processes hold resources while waiting for additional ones.</p>
+                </div>
+                <div class="condition">
+                    <i class="fas fa-ban"></i>
+                    <h3>No Preemption</h3>
+                    <p>Resources cannot be forcibly removed from processes.</p>
+                </div>
+                <div class="condition">
+                    <i class="fas fa-circle"></i>
+                    <h3>Circular Wait</h3>
+                    <p>A circular chain of processes exists where each waits for a resource held by the next.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-card">
+            <h2>🔍 Deadlock Detection</h2>
+            <br>
+            <p>Deadlocks can be detected using graph-based techniques:</p>
+            <ul class="strategy-list">
+                <li>
+                    <strong>Resource Allocation Graph (RAG):</strong> Represents processes and resources with edges indicating allocation and requests.
+                </li>
+                <li>
+                    <strong>Wait-For Graph (WFG):</strong> A simplified RAG that only tracks dependencies among processes.
+                </li>
+                <li>
+                    <strong>Cycle Detection Algorithms:</strong> Depth-First Search (DFS) or algorithms like Banker's Algorithm can be used to identify circular dependencies.
+                </li>
+            </ul>
+        </div>
 
-        <h2>🛑 How Deadlocks Occur</h2>
-        <p>Deadlocks often occur in multi-processing systems, databases, and distributed systems where multiple processes share resources. Common scenarios include:</p>
-        <ul>
-            <li>Two processes each holding a resource and waiting for the other to release its resource.</li>
-            <li>Multiple transactions in a database trying to lock the same records.</li>
-            <li>Threads in a multi-threaded program waiting for shared variables or memory.</li>
-        </ul>
-
-        <h2>🔎 Deadlock Detection</h2>
-        <p>Deadlocks can be detected using graph-based techniques:</p>
-        <ul>
-            <li><strong>Resource Allocation Graph (RAG):</strong> Represents processes and resources with edges indicating allocation and requests.</li>
-            <li><strong>Wait-For Graph (WFG):</strong> A simplified RAG that only tracks dependencies among processes.</li>
-            <li><strong>Cycle Detection Algorithms:</strong> Depth-First Search (DFS) or algorithms like Banker's Algorithm can be used to identify circular dependencies.</li>
-        </ul>
-
-        <h2>✅ Deadlock Prevention Techniques</h2>
-        <ul>
-            <li><strong>Resource Hierarchies:</strong> Assigning a fixed order to resource allocation to prevent circular wait.</li>
-            <li><strong>Request-All-At-Once:</strong> Ensuring a process requests all needed resources at the start to avoid hold and wait.</li>
-            <li><strong>Timeouts:</strong> Setting time limits on resource holding to break potential deadlocks.</li>
-            <li><strong>Process Prioritization:</strong> Allowing high-priority processes to preempt resources from lower-priority processes.</li>
-        </ul>
-
-        <h2>🔄 Deadlock Recovery Strategies</h2>
-        <p>If a deadlock is detected, the system can recover using one of the following methods:</p>
-        <ul>
-            <li><strong>Process Termination:</strong> Killing one or more processes to break the circular dependency.</li>
-            <li><strong>Resource Preemption:</strong> Forcing processes to release resources and restarting them later.</li>
-            <li><strong>Rollback:</strong> Reverting processes to a previous safe state.</li>
-        </ul>
-
-        <h2>💡 Real-World Examples of Deadlock</h2>
-        <ul>
-            <li><strong>Database Deadlocks:</strong> Two transactions waiting for locks on the same records.</li>
-            <li><strong>Multithreading:</strong> Two threads holding locks and waiting for each other to release them.</li>
-            <li><strong>Operating Systems:</strong> Two or more processes waiting for I/O resources like printers or disk drives.</li>
-        </ul>
+        <div class="info-card">
+            <h2>🛠️ Deadlock Handling Strategies</h2>
+            <ul class="strategy-list">
+                <li>
+                    <strong>Prevention:</strong> Design system to negate one of the four conditions.
+                </li>
+                <li>
+                    <strong>Avoidance:</strong> Use algorithms (like Banker's) to ensure safe states.
+                </li>
+                <li>
+                    <strong>Detection & Recovery:</strong> Allow deadlocks but detect and recover from them.
+                </li>
+                <li>
+                    <strong>Ignorance:</strong> Pretend deadlocks never occur (used by many OS).
+                </li>
+            </ul>
+        </div>
     </section>
 
     <footer>
         <p>© 2025 LockX. All rights reserved.</p>
     </footer>
-
 </body>
 </html>
