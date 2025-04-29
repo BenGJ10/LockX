@@ -1,13 +1,15 @@
+<!-- team.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meet the Team</title>
+    <title>Meet the Team - LockX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
-
     <!-- HEADER -->
     <header>
         <div class="logo">LockX</div>
@@ -16,38 +18,58 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="lockx.html">About LockX</a></li>
                 <li><a href="deadlock.html">About Deadlock</a></li>
-                <li><a href="team.html">Meet the Team</a></li>
+                <li><a href="team.html" class="active">Meet the Team</a></li>
             </ul>
         </nav>
     </header>
 
-    <section class="team">
-        <h1>Meet Our Team</h1>
-        <div class="team-container">
-            <div class="team-member">
-                <img src="member2.jpeg" alt="Team Member 1">
-                <h2>Ben Gregory</h2>
-                <p>Registration No: 12315900</p>
+    <main>
+        <section class="team">
+            <h1>Meet Our Team</h1>
+            <p class="team-description">The brilliant minds behind LockX's innovative deadlock detection technology.</p>
+            
+            <div class="team-container">
+                <div class="team-member">
+                    <div class="member-image">
+                        <img src="member2.jpeg" alt="Ben Gregory" onerror="this.src='placeholder.png'">
+                    </div>
+                    <h2>Ben Gregory</h2>
+                    <p class="reg-no">Registration: 12315900</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                
+                <div class="team-member">
+                    <div class="member-image">
+                        <img src="member1.jpeg" alt="Aleena Rose" onerror="this.src='placeholder.png'">
+                    </div>
+                    <h2>Aleena Rose</h2>
+                    <p class="reg-no">Registration: 12306508</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                
+                <div class="team-member">
+                    <div class="member-image">
+                        <img src="member3.jpeg" alt="Pooja Dheeraj" onerror="this.src='placeholder.png'">
+                    </div>
+                    <h2>Pooja Dheeraj</h2>
+                    <p class="reg-no">Registration: 12322318</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
             </div>
-            <div class="team-member">
-                <img src="member1.jpeg" alt="Team Member 2">
-                <h2>Aleena Rose</h2>
-                <p>Registration No: 12306508</p>
-            </div>
-            <div class="team-member">
-                <img src="member1.jpeg" alt="Team Member 3">
-                <h2>Pooja Dheeraj</h2>
-                <p>Registration No: 12322318/p>
-            </div>
-        </div>
-    </section>
-     <br> <br> <br> <br> <br> <br> <br>
+        </section>
+    </main>
+
     <footer>
-        <p>© 2025 LockX. All rights reserved.</p>
+        <p>&copy; 2025 LockX Deadlock Detection System. All rights reserved.</p>
     </footer>
-
-
-   
-
 </body>
 </html>
