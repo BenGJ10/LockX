@@ -1,5 +1,4 @@
-psutil          # Provides system and process utilities (CPU, memory, disk usage monitoring) 
-random          # Python's built-in library for generating random numbers
-time            # Standard library for time-related functions (delays, timestamps, etc.)
-tkinter         # Standard GUI toolkit for creating graphical user interfaces
-ttkthemes       # Themed widgets for ttk (adds customizable themes to the tkinter-based GUI)
+psutil         
+random          
+time            
+flask
